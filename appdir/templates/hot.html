@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+{% block content %}
+    <style>
+        .card {
+            margin: 30px;
+        }
+
+        .info {
+            margin-left: 20px;
+        }
+
+        #my-div {
+            margin-top: 30px;
+        }
+
+    </style>
+    <script>
+        function handle_submit_answer(question){
+            let boxs = document.getElementsByName(question.id)
+            let choices =  question.description.split('，，')
+            let answer = choices[choices.length-1]
+            let s = ''
+            for (let i = 0; i < boxs.length; i++) {
+                let box = boxs[i]
+                if(box.checked) s += '-'+box.value
+            }
+            s = s.substr(1)
+            if(s===answer){
+                myAlert("回答正确");
+            }else {
+
+                let ids = String(answer).split('-')
+                console.log(ids)
+                let str = "回答错误，正确答案是"
+                for (let i = 0; i < ids.length; i++) {
+                    str += ' '+ choices[ids[i]]
+                }
+
+                myAlert(str);
+            }
+        }
+    </script>
+
+
+    <div class="card text-center">
+        <div class="card-header">
+            <ul class="nav nav-tabs card-header-tabs">
+                <li class="nav-item">
+                    <a class="nav-link active" href="{{ url_for('questions',type='hot') }}">Hot</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('questions',type='new') }}">New</a>
+                </li>
+
+            </ul>
+        </div>
+        <div class="card-body">
+            <h5 class="card-title">热门的问题</h5>
+            {% for question in questions %}
+                <div class="card text-left">
+                    <h5 class="card-header">
+                        <img src="../static/image/bootstrap-icon/person-fill.svg" width="25" height="25"
+                             class="d-inline-block align-middle"
+                             alt="" loading="lazy">
+                        <span class="align-middle">{{ question.username }}</span>
+                    </h5>
+                    <div class="card-body">
+                        <h5 class="card-title">{{ question.title }}</h5>
+                        <p class="card-text"><input name={{ question.id }} type="checkbox" value="0" />{{ question.description.split('，，')[0] }}</p>
+                        <p class="card-text"><input name={{ question.id }} type="checkbox" value="1" />{{ question.description.split('，，')[1] }}</p>
+                        <p class="card-text"><input name={{ question.id }} type="checkbox" value="2" />{{ question.description.split('，，')[2] }}</p>
+                        <p class="card-text"><input name={{ question.id }} type="checkbox" value="3" />{{ question.description.split('，，')[3] }}</p>
+                        <div id="my-div">
+                            <p class="card-text text-muted">{{ question.time }}</p>
+                            <button id="submit-answer" class="btn btn-outline-primary"
+                                    onclick="handle_submit_answer({{ question }})">提交答案</button>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+{% endblock %}
